@@ -87,39 +87,45 @@ func MysqlConnectTest(configName string) *gorm.DB {
 
 //OpenDbPool OpenDbPool
 func OpenDbPool() {
-	if viper.Get("env") != "testing" {
-		DB = MysqlConnect("mysql")
-	} else {
-		DB = MysqlConnectTest("mysql")
+	if viper.Sub("database.mysql") != nil {
+		if viper.Get("env") != "testing" {
+			DB = MysqlConnect("mysql")
+		} else {
+			DB = MysqlConnectTest("mysql")
+		}
+		pool := viper.Sub("database.mysql.pool")
+		DB.DB().SetMaxOpenConns(pool.GetInt("maxOpenConns"))
+		DB.DB().SetMaxIdleConns(pool.GetInt("maxIdleConns"))
+		DB.DB().SetConnMaxLifetime(pool.GetDuration("maxLifetime") * time.Second)
 	}
-	pool := viper.Sub("database.mysql.pool")
-	DB.DB().SetMaxOpenConns(pool.GetInt("maxOpenConns"))
-	DB.DB().SetMaxIdleConns(pool.GetInt("maxIdleConns"))
-	DB.DB().SetConnMaxLifetime(pool.GetDuration("maxLifetime") * time.Second)
 }
 
 //RedisConnect RedisConnect
 func RedisConnect() {
-	if viper.Get("env") != "testing" {
-		conf := LoadDBConfig("redis")
-		client := redis.NewClient(&redis.Options{
-			Addr:     conf.Host + ":" + strconv.Itoa(conf.Port),
-			Password: conf.Password,
-			DB:       conf.DBNumber,
-		})
+	if viper.Sub("database.redis") != nil {
+		if viper.Get("env") != "testing" {
+			conf := LoadDBConfig("redis")
+			client := redis.NewClient(&redis.Options{
+				Addr:     conf.Host + ":" + strconv.Itoa(conf.Port),
+				Password: conf.Password,
+				DB:       conf.DBNumber,
+			})
 
-		Redis = client
+			Redis = client
+		}
 	}
 }
 
 //MongoConnect MongoConnect
 func MongoConnect() {
-	if viper.Get("env") != "testing" {
-		conf := LoadDBConfig("mongo")
-		session, err := mgo.Dial(conf.Host)
-		if err != nil {
-			panic(err)
+	if viper.Sub("database.mongo") != nil {
+		if viper.Get("env") != "testing" {
+			conf := LoadDBConfig("mongo")
+			session, err := mgo.Dial(conf.Host)
+			if err != nil {
+				panic(err)
+			}
+			Mgo = mongo.MongoSession{Session: session}
 		}
-		Mgo = mongo.MongoSession{Session: session}
 	}
 }
