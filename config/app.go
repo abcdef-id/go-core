@@ -9,36 +9,32 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var (
-	// AppPath application path
-	AppPath string
-)
-
 func init() {
 	// set config based on env
-	loadEnvVars()
+	LoadEnvVars()
 	RedisConnect()
 	MongoConnect()
 	OpenDbPool()
 }
 
-func loadEnvVars() {
+// LoadEnvVars ..
+func LoadEnvVars() {
 	// Bind OS environment variable
 	viper.SetEnvPrefix("app")
 	viper.BindEnv("env")
 
 	dir, _ := os.Getwd()
-	AppPath := dir
+	appPath := dir
 	if viper.Get("env") == "testing" {
 		viper.BindEnv("path") // bind OS environment variable APP_PATH variable
 		viper.SetConfigName("testing")
-		AppPath = viper.GetString("path")
+		appPath = viper.GetString("path")
 	} else {
 		viper.SetConfigName("config")
 	}
 
 	viper.SetConfigType("json")
-	viper.AddConfigPath(AppPath)
+	viper.AddConfigPath(appPath)
 
 	err := viper.ReadInConfig()
 	if err != nil {
