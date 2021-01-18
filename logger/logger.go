@@ -30,12 +30,7 @@ func init() {
 
 	// default service log dir setting
 	if !strings.HasPrefix(logdir, "/") {
-		dir := ""
-		if viper.Get("env") == "testing" {
-			dir = viper.GetString("app_path")
-		} else {
-			dir, _ = os.Getwd()
-		}
+		dir, _ := os.Getwd()
 		logdir = dir + "/log"
 	}
 
