@@ -15,9 +15,7 @@ import (
 )
 
 var (
-	// MiddlewareLog logger.
-	MiddlewareLog *rotatelogs.RotateLogs
-	serviceLog    *rotatelogs.RotateLogs
+	serviceLog *rotatelogs.RotateLogs
 	// Logger is logger instance.
 	Logger zerolog.Logger
 )
@@ -38,14 +36,6 @@ func init() {
 		// default 15 days
 		logMaxAge = 15
 	}
-
-	// Set Middleware logging.
-	MiddlewareLog, _ = rotatelogs.New(
-		logdir+"/access_log.%Y%m%d%H%M",
-		rotatelogs.WithLinkName(logdir+"/access_log"),
-		rotatelogs.WithMaxAge(time.Duration(logMaxAge)*24*time.Hour),
-		rotatelogs.WithRotationTime(time.Hour),
-	)
 
 	// Set Service logging.
 	serviceLog, _ = rotatelogs.New(
