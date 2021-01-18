@@ -20,7 +20,6 @@ var (
 	serviceLog    *rotatelogs.RotateLogs
 	// Logger is logger instance.
 	Logger zerolog.Logger
-	//Log           *log.Logger
 )
 
 func init() {
@@ -55,8 +54,8 @@ func init() {
 
 	// Set Service logging.
 	serviceLog, _ = rotatelogs.New(
-		logdir+"/service_log.%Y%m%d%H%M",
-		rotatelogs.WithLinkName(logdir+"/service_log"),
+		logdir+"/"+viper.GetString("log_filename")+".%Y%m%d%H%M",
+		rotatelogs.WithLinkName(logdir+"/"+viper.GetString("log_filename")+"_log"),
 		rotatelogs.WithMaxAge(time.Duration(logMaxAge)*24*time.Hour),
 		rotatelogs.WithRotationTime(time.Hour),
 	)

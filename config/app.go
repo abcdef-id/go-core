@@ -30,7 +30,9 @@ func loadEnvVars() {
 	dir, _ := os.Getwd()
 	AppPath := dir
 	if viper.Get("env") == "testing" {
+		viper.BindEnv("path") // bind OS environment variable APP_PATH variable
 		viper.SetConfigName("testing")
+		AppPath = viper.GetString("path")
 	} else {
 		viper.SetConfigName("config")
 	}
